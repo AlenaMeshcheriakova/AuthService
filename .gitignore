@@ -1,0 +1,6 @@
+/cfg/development/
+/cfg/production/
+/cfg/testing/
+/log/
+/alembic/
+/.venv/
