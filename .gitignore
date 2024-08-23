@@ -2,7 +2,7 @@
 /cfg/production/
 /cfg/testing/
 /log/
-/alembic/
 /.venv/
 *.pyc
 __pycache__/
+.idea
