@@ -3,9 +3,7 @@ import pytest
 
 from src.db.base import Base
 from cfg.сonfig import settings
-
 from src.db.database import sync_engine, session_factory
-
 
 @pytest.fixture(autouse=True, scope='session')
 def prepare_database():
