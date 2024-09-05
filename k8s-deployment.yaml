@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-deployment
+  labels:
+    app: auth-service-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service-app
+  template:
+    metadata:
+      labels:
+        app: auth-service-app
+    spec:
+      containers:
+      - name: auth-service-container
+        image: europe-central2-docker.pkg.dev/telegrambot-433510/telegram-docker-repo/auth-service-image:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MODE
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-secrets
+              key: MODE
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-secrets
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-secrets
+              key: DB_PORT
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-secrets
+              key: DB_PASS
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-secrets
+              key: DB_NAME
+        - name: GRPC_HOST
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: GRPC_HOST
+        - name: GRPC_PORT
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: GRPC_PORT
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: SECRET_KEY
+        - name: JWT_ALGORITHM
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: JWT_ALGORITHM
+        - name: ACCESS_TOKEN_EXPIRE_MINUTES
+          valueFrom:
+            secretKeyRef:
+              name: auth-secrets
+              key: ACCESS_TOKEN_EXPIRE_MINUTES
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service-app
+  ports:
+    - protocol: TCP
+      port: 50053
+      targetPort: 50053
+  type: ClusterIP

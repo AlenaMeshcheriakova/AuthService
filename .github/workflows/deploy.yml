@@ -1,0 +1,46 @@
+name: Deploy AuthService to GKE
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Configure Docker to use Google Cloud credentials
+      run: |
+        gcloud auth configure-docker europe-central2-docker.pkg.dev
+    
+    - name: Build Docker image
+      run: |
+        docker build -t europe-central2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/telegram-docker-repo/${{ secrets.IMAGE_NAME }}:latest .
+
+    - name: Push to Google Container Registry
+      run: |
+        docker push europe-central2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/telegram-docker-repo/${{ secrets.IMAGE_NAME }}:latest
+
+    - name: Install GKE Authentication Plugin
+      run: |
+        gcloud components install gke-gcloud-auth-plugin
+    
+    - name: Deploy to GKE
+      run: |
+        gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} --zone ${{ secrets.GKE_CLUSTER_ZONE }} --project ${{ secrets.GCP_PROJECT_ID }}
+        kubectl apply -f k8s-deployment.yaml
