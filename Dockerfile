@@ -68,6 +68,8 @@ RUN poetry install
 # will become mountpoint of our code
 WORKDIR /app
 
+ENV PYTHONPATH=/app
+
 EXPOSE 8000
 
 CMD ["sh", "-c", "alembic upgrade head && python src/grpc/main_grpc.py"]
