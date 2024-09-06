@@ -35,6 +35,11 @@ spec:
             secretKeyRef:
               name: auth-db-secrets
               key: DB_PORT
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-secrets
+              key: DB_USER
         - name: DB_PASS
           valueFrom:
             secretKeyRef:
