@@ -1,19 +1,24 @@
 import logging
 from typing import Union
 from functools import wraps
+import sys
+
 
 class CustomLogger:
 
     filename: str
 
-    def __init__(self, filename: str = "common.log"):
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)s %(levelname)s %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-            filename="../../log/" + filename,
-            filemode='a'
+    def __init__(self):
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter(
+            fmt="%(asctime)s %(levelname)s %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S"
         )
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
 
     def get_logger(self, name=None):
         return logging.getLogger(name)
