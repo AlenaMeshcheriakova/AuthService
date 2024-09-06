@@ -72,4 +72,4 @@ ENV PYTHONPATH=/app
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "alembic upgrade head && python src/grpc/main_grpc.py"]
+CMD ["sh", "-c", "alembic upgrade head && python main_grpc.py"]
