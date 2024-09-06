@@ -3,28 +3,26 @@ from typing import Union
 from functools import wraps
 import sys
 
-
 class CustomLogger:
 
     filename: str
 
     def __init__(self):
         self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
 
-        formatter = logging.Formatter(
-            fmt="%(asctime)s %(levelname)s %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
-        )
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
+        if not self.logger.hasHandlers():
+            self.logger.setLevel(logging.DEBUG)
+
+            formatter = logging.Formatter(
+                fmt="%(asctime)s %(levelname)s %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S"
+            )
+            console_handler = logging.StreamHandler(sys.stdout)
+            console_handler.setFormatter(formatter)
+            self.logger.addHandler(console_handler)
 
     def get_logger(self, name=None):
         return logging.getLogger(name)
-
-def get_default_logger():
-    return CustomLogger().get_logger()
 
 def log_decorator(_func=None, *, my_logger: Union[CustomLogger, logging.Logger] = None):
     def decorator_log(func):
@@ -53,3 +51,9 @@ def log_decorator(_func=None, *, my_logger: Union[CustomLogger, logging.Logger] 
         return decorator_log
     else:
         return decorator_log(_func)
+
+logger_instance = CustomLogger()
+logger = logger_instance.get_logger()
+
+def get_default_logger():
+    return logger_instance.get_logger()

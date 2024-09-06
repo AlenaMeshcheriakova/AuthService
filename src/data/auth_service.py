@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 from cfg.сonfig import settings
 from src.db.database import session_factory
-from src.log.logger import log_decorator, CustomLogger
+from src.log.logger import log_decorator, logger
 from src.model.userdb import UserDB
 from jose import JWTError, jwt
 
@@ -14,7 +14,7 @@ class TokenData(BaseModel):
 class AuthOrm:
 
     @staticmethod
-    @log_decorator(my_logger=CustomLogger())
+    @log_decorator(my_logger=logger)
     def get_user_by_email(email: str):
         """
         Get user from the database using their email
@@ -25,7 +25,7 @@ class AuthOrm:
             return session.query(UserDB).filter(UserDB.email == email).first()
 
     @staticmethod
-    @log_decorator(my_logger=CustomLogger())
+    @log_decorator(my_logger=logger)
     def get_user_by_username(username: str):
         """
         Get user from the database using their username
@@ -36,7 +36,7 @@ class AuthOrm:
             return session.query(UserDB).filter(UserDB.user_name == username).first()
 
     @staticmethod
-    @log_decorator(my_logger=CustomLogger())
+    @log_decorator(my_logger=logger)
     def create_user(email: str, password: str, username: str, telegram_user_id:str) -> UserDB:
         """
         Method for creating AUTH user
@@ -60,7 +60,7 @@ class AuthOrm:
             return new_user
 
     @staticmethod
-    @log_decorator(my_logger=CustomLogger())
+    @log_decorator(my_logger=logger)
     def create_access_token(data: dict, expires_delta: Optional[datetime.timedelta] = None):
         """
         Creates a JWT access token with an expiration time
@@ -78,7 +78,7 @@ class AuthOrm:
         return encoded_jwt
 
     @staticmethod
-    @log_decorator(my_logger=CustomLogger())
+    @log_decorator(my_logger=logger)
     def verify_token(token: str) -> TokenData:
         """
         Verify a JWT token. Decode JWT token and extract username, otherwise raise an exception
